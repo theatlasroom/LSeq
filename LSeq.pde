@@ -4,15 +4,14 @@ import com.rngtng.launchpad.*;
 * the sequencer only sets up the paramters and the basic actions for each track and can be connected to audio / video whatever
 * the output of the sequencer can be completely reprogrammed for any use (audio, video sequencing, mixture, process effcts etc)
 */
-int SEQUENCE_START_ROW = 0;
 
 ModularSequencer ms;
 LPadControl pad;
-int step=0, prev_step=-1, pad_color;
+int step=0, prev_step=-1, prev_x, prev_y, pad_color;
 boolean step_on_beat;
 
 void setup(){
-  ms = new ModularSequencer(164, 32);  //create a new sequencer object, with bpm 144 and 64 steps
+  ms = new ModularSequencer(144, 32);  //create a new sequencer object, with bpm 144 and 64 steps
   Launchpad new_pad = new Launchpad(this);  
   pad = new LPadControl(new_pad);     //create a new pad object
   println("Frame rate: " + ms.SeqFrameRate());
@@ -22,9 +21,13 @@ void setup(){
 void draw(){
   //generate the next step in the sequence
   step = ms.NextStep();
-  step_on_beat = (step%4==0) ? true : false; //set the step on beat flag based on the beat division (in this case 4)
+  //step_on_beat = (step%4==0) ? true : false; //set the step on beat flag based on the beat division (in this case 4)
   //light up the next step on the sequencer
-  pad.LightStep(step, prev_step, step_on_beat);
+  pad.LightStep(step, prev_step);   
+  prev_x = pad.StepX(prev_step);
+  prev_y = pad.StepY(prev_step);
+  //println("prev step state: " + ms.StepState(prev_x, prev_y));
+  pad.SetGrid(prev_x, prev_y, ms.StepState(prev_x, prev_y));  
   prev_step = step;
 }
 
@@ -34,31 +37,26 @@ void Process(int step){
 }
 
 void launchpadButtonPressed(int buttonCode){
-  println(buttonCode);
+  //println("New button: " + buttonCode);
   pad.TransportButton(buttonCode);  
 }  
 
 void launchpadSceneButtonPressed(int buttonCode){
-  println(buttonCode);
+  //println("Scene button: " + buttonCode);
   int sc = pad.SceneNum(buttonCode);
   pad.ChangeScene(sc, ms.Sequence(sc));  
-  //println("Scene Button pressed: " + buttonCode);
-  ////lpad.changeSceneButton(buttonCode, LColor.RED_HIGH);
+  ms.LoadSequence(sc);
 }  
 
 void launchpadSceneButtonReleased(int buttonCode){
-  //pad.ChangeScene(buttonCode);  
-  //println("Scene Button pressed: " + buttonCode);
-  //lpad.changeSceneButton(buttonCode, LColor.GREEN_HIGH + LColor.FLASHING);
 }  
 
 void launchpadGridPressed(int x, int y){
-  int scene = pad.CurrentScene();
-  //println("curr scene: " + scene);
+  int scene = ms.CurrentSequence();
   //process the keypress event for a grid space
   if (scene != pad.SEQ_SCENE){
-    pad.ToggleGrid(x, y);
-    ms.ToggleStep(scene, x, y);
+    ms.ToggleStep(scene, x, y);  //toggle the state of the specified step    
+    pad.SetGrid(x, y, ms.StepState(x, y));  //set the grid based on the state of the step
   }
 } 
 
