@@ -12,7 +12,7 @@ int step=0, prev_step=-1, pad_color;
 boolean step_on_beat;
 
 void setup(){
-  ms = new ModularSequencer(164, 32);  //create a new sequencer object, with bpm 144 and 64 steps
+  ms = new ModularSequencer(120, 16);  //create a new sequencer object, with bpm 144 and 64 steps
   Launchpad new_pad = new Launchpad(this);  
   pad = new LPadControl(new_pad);     //create a new pad object
   println("Frame rate: " + ms.SeqFrameRate());
