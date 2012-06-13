@@ -14,14 +14,11 @@ int step=0, prev_step=-1, prev_x, prev_y, pad_color, max_steps = 32, bpm = 144;
 boolean step_on_beat;
 
 void setup(){
-<<<<<<< HEAD
   ms = new ModularSequencer(120, 16);  //create a new sequencer object, with bpm 144 and 64 steps
-=======
   //setup the canvas
   size(500, 500);
   //setup the sequencer and launchpad controller
   ms = new ModularSequencer(bpm, max_steps);  //create a new sequencer object, with bpm 144 and 64 steps
->>>>>>> 654f173ded847b112f2695e573b27519a3ff1dc0
   Launchpad new_pad = new Launchpad(this);  
   pad = new LPadControl(new_pad);     //create a new pad object
   this.InitProcessors();  //initialize all the processors to be used
